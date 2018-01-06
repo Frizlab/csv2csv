@@ -42,7 +42,7 @@ struct CommandLineOption : Hashable, Equatable {
 					throw ParseError.unknownLongOption(optionName)
 				}
 				
-			} else if arg.hasPrefix("-") {
+			} else if arg.hasPrefix("-") && arg != "-" {
 				/* We got a short option */
 				var curChars = arg.dropFirst()
 				for c in curChars {
