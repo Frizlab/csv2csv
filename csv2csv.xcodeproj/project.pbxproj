@@ -12,6 +12,7 @@
 		7B8EF48220012E6100ACF52B /* stdstreams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B8EF48120012E6100ACF52B /* stdstreams.swift */; };
 		7B8EF48420013A1E00ACF52B /* ParsedCommandLineArguments.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B8EF48320013A1E00ACF52B /* ParsedCommandLineArguments.swift */; };
 		7B8EF48620013A4E00ACF52B /* CommandLineOptionParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B8EF48520013A4E00ACF52B /* CommandLineOptionParser.swift */; };
+		7B8EF4882001567E00ACF52B /* String+CSV.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B8EF4872001567E00ACF52B /* String+CSV.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -33,6 +34,7 @@
 		7B8EF48120012E6100ACF52B /* stdstreams.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = stdstreams.swift; sourceTree = "<group>"; };
 		7B8EF48320013A1E00ACF52B /* ParsedCommandLineArguments.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParsedCommandLineArguments.swift; sourceTree = "<group>"; };
 		7B8EF48520013A4E00ACF52B /* CommandLineOptionParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandLineOptionParser.swift; sourceTree = "<group>"; };
+		7B8EF4872001567E00ACF52B /* String+CSV.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+CSV.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -70,6 +72,7 @@
 				7B8EF48320013A1E00ACF52B /* ParsedCommandLineArguments.swift */,
 				7B8EF47820012CC900ACF52B /* main.swift */,
 				7B8EF47F20012D9000ACF52B /* CSVParser.swift */,
+				7B8EF4872001567E00ACF52B /* String+CSV.swift */,
 			);
 			path = csv2csv;
 			sourceTree = "<group>";
@@ -133,6 +136,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7B8EF48220012E6100ACF52B /* stdstreams.swift in Sources */,
+				7B8EF4882001567E00ACF52B /* String+CSV.swift in Sources */,
 				7B8EF48620013A4E00ACF52B /* CommandLineOptionParser.swift in Sources */,
 				7B8EF47920012CC900ACF52B /* main.swift in Sources */,
 				7B8EF48420013A1E00ACF52B /* ParsedCommandLineArguments.swift in Sources */,

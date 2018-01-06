@@ -14,7 +14,11 @@ import Foundation
 
 
 
+/* Note: This parser is not fully compliant with the CSV ref as it accepts any
+ *       newlines types (even if they are not the same throughout the file). */
 class CSVParser {
+	
+	static let defaultHeaderPrefix = "FIELD_"
 	
 	private(set) var fieldNames: [String]
 	
@@ -126,7 +130,7 @@ class CSVParser {
 				fieldName = fieldNames[fieldCount]
 			} else {
 				fieldNamesCount += 1
-				fieldName = NSString(format: "FIELD_%d", fieldNamesCount) as String
+				fieldName = "\(CSVParser.defaultHeaderPrefix)\(fieldNamesCount)"
 				fieldNames.append(fieldName)
 			}
 			record[fieldName] = field

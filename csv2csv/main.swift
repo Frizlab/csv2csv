@@ -12,10 +12,13 @@ import Foundation
 
 let progVersion = "1.0"
 
-enum ExitCodes : Int32 {
+enum ExitCodes : Int32, Error {
 	case noError = 0
 	case syntaxError = 1
-	
+	case ioError = 2
+	case invalidUTF8 = 3
+	case invalidCSV = 4
+
 	case unknownError = 255
 }
 
@@ -48,7 +51,58 @@ let progName = CommandLine.arguments[0]
 
 do {
 	let parsedArguments = try ParsedCommandLineArguments(args: Array(CommandLine.arguments.dropFirst()))
-	print(parsedArguments)
+	/* Let's open the input file */
+	let ifh: FileHandle
+	if parsedArguments.inputFile == "-" {ifh = FileHandle.standardInput}
+	else {
+		guard let fh = FileHandle(forReadingAtPath: parsedArguments.inputFile) else {
+			printError(programName: progName, errorMessage: "cannot open file at path \(parsedArguments.inputFile)", stream: &stderrStream)
+			throw ExitCodes.ioError
+		}
+		ifh = fh
+	}
+	/* Let's read the file */
+	let data = ifh.readDataToEndOfFile()
+	ifh.closeFile()
+	guard let stringInput = String(data: data, encoding: .utf8) else {
+		printError(programName: progName, errorMessage: "invalid utf8 for file at path \(parsedArguments.inputFile)", stream: &stderrStream)
+		throw ExitCodes.invalidUTF8
+	}
+	/* Let's parse the file */
+	let parser = CSVParser(source: stringInput, startOffset: 0, separator: parsedArguments.inputSeparator, hasHeader: false, fieldNames: nil)
+	guard let parsedRows = parser.arrayOfParsedRows() else {
+		printError(programName: progName, errorMessage: "invalid csv for file at path \(parsedArguments.inputFile)", stream: &stderrStream)
+		throw ExitCodes.invalidCSV
+	}
+	let numberOfColumns = parsedRows.reduce(0, { max($0, $1.count) })
+	/* Let's open the output file */
+	let ofh: FileHandle
+	if parsedArguments.outputFile == "-" {ofh = FileHandle.standardOutput}
+	else {
+		_ = try? FileManager.default.removeItem(atPath: parsedArguments.outputFile)
+		guard FileManager.default.createFile(atPath: parsedArguments.outputFile, contents: nil, attributes: nil) else {
+			printError(programName: progName, errorMessage: "cannot create file at path \(parsedArguments.outputFile)", stream: &stderrStream)
+			throw ExitCodes.ioError
+		}
+		guard let fh = FileHandle(forWritingAtPath: parsedArguments.outputFile) else {
+			printError(programName: progName, errorMessage: "cannot open file at path \(parsedArguments.outputFile)", stream: &stderrStream)
+			throw ExitCodes.ioError
+		}
+		ofh = fh
+	}
+	/* Let's write the result to the output */
+	for row in parsedRows {
+		var first = true
+		for i in 1...numberOfColumns {
+			if !first {ofh.write(Data(parsedArguments.outputSeparator.utf8))}
+			first = false
+			
+			let v = row[CSVParser.defaultHeaderPrefix + String(i)] ?? ""
+			ofh.write(Data(v.csvCellValueWithSeparator(parsedArguments.outputSeparator).utf8))
+		}
+		ofh.write(Data("\r\n".utf8))
+	}
+	ofh.closeFile()
 } catch let error as ParsedCommandLineArguments.Error {
 	switch error {
 	case .help:                            usage(programName: progName, stream: &stdinStream);                                                    exit(ExitCodes.noError.rawValue)
@@ -58,6 +112,8 @@ do {
 	case .missingInputFile:                printError(programName: progName, errorMessage: "no input file", stream: &stderrStream);               exit(ExitCodes.syntaxError.rawValue)
 	case .tooManyArgs:                     printError(programName: progName, errorMessage: "stray args", stream: &stderrStream);                  exit(ExitCodes.syntaxError.rawValue)
 	}
+} catch let error as ExitCodes {
+	exit(error.rawValue)
 } catch {
 	exit(ExitCodes.unknownError.rawValue)
 }
